@@ -1,0 +1,74 @@
+========================================================================
+ LovelyLookalikeDash — SimHub "Custom Serial device" UPDATE MESSAGE
+========================================================================
+
+Paste the expression below into SimHub:
+
+  SimHub  ->  "Custom Serial devices"  ->  (your COM port, 115200 baud)
+          ->  "Update Messages"  ->  add one message
+          ->  interval 33 ms (~30 Hz; 16 ms for ~60 Hz)
+          ->  paste the whole expression into the formula box.
+
+It is ONE NCalc expression. It builds a single line that starts with the
+header "LDU1", is ';' separated, and ends with '#'. The firmware uses '#'
+as the record terminator, so you do NOT need to append a newline.
+
+Every value comes from game-agnostic DataCorePlugin properties, so the
+same message works for iRacing, Le Mans Ultimate, Assetto Corsa, ACC,
+rFactor 2, Automobilista 2, F1, etc. — SimHub normalises them all.
+
+All fractional values are sent as SCALED INTEGERS (delta x1000, fuel x10,
+fuel/lap x100, fuel-laps x10, brake-bias x10). This is deliberate: it
+avoids the decimal-separator problem on non-US Windows locales (e.g. an
+Italian PC writing "0,234"), which would otherwise break parsing. The
+firmware rescales them back. See docs/PROTOCOL.md for the field table.
+
+------------------------------------------------------------------------
+UPDATE MESSAGE (copy everything between the lines):
+------------------------------------------------------------------------
+'LDU1;'
++ isnull([DataCorePlugin.GameData.NewData.Gear],'N') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.SpeedKmh],0),'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.Rpms],0),'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.MaxRpm],0),'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.CarSettings_CurrentDisplayedRPMPercent],0)*100,'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.Position],0),'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.OpponentsCount],0),'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.CurrentLap],0),'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.TotalLaps],0),'0') + ';'
++ format([DataCorePlugin.GameData.NewData.LastLapTime],'mm\:ss\.fff') + ';'
++ format([DataCorePlugin.GameData.NewData.BestLapTime],'mm\:ss\.fff') + ';'
++ format([DataCorePlugin.GameData.NewData.CurrentLapTime],'mm\:ss\.fff') + ';'
++ format(isnull([PersistantTrackerPlugin.SessionBestLiveDeltaSeconds],0)*1000,'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.Fuel],0)*10,'0') + ';'
++ format(isnull([DataCorePlugin.Computed.Fuel_LitersPerLap],0)*100,'0') + ';'
++ format(isnull([DataCorePlugin.Computed.Fuel_RemainingLaps],0)*10,'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.TCLevel],-1),'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.ABSLevel],-1),'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.BrakeBias],-1)*10,'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.Flag_Yellow],0)*1
+       + isnull([DataCorePlugin.GameData.NewData.Flag_Blue],0)*2
+       + isnull([DataCorePlugin.GameData.NewData.Flag_White],0)*4
+       + isnull([DataCorePlugin.GameData.NewData.Flag_Black],0)*8
+       + isnull([DataCorePlugin.GameData.NewData.Flag_Checkered],0)*16
+       + isnull([DataCorePlugin.GameData.NewData.Flag_Green],0)*32,'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.WaterTemperature],0),'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.OilTemperature],0),'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.PitLimiterOn],0),'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.DRSEnabled],0)
+       + isnull([DataCorePlugin.GameData.NewData.DRSAvailable],0),'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.Brake],0),'0') + ';'
++ format(isnull([DataCorePlugin.GameData.NewData.Throttle],0),'0')
++ '#'
+------------------------------------------------------------------------
+
+NOTES
+- No "On connect" / "On disconnect" message is required.
+- Leave "Message ending" / newline options OFF — the '#' is the terminator.
+- If your Windows locale prints a leading space for positive numbers,
+  that is harmless (the firmware trims / atoi handles it).
+- BrakeBias is assumed to already be a front-% (e.g. 54). If your game
+  reports it as a 0..1 fraction, drop the "*10" on that line.
+- If the rev bar never moves for a particular game, that game doesn't fill
+  CarSettings_CurrentDisplayedRPMPercent — the firmware then falls back to
+  Rpms/MaxRpm automatically, so no change is needed here.
