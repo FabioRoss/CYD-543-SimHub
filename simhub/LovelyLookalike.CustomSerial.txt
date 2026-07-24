@@ -36,9 +36,9 @@ UPDATE MESSAGE (copy everything between the lines):
 + format(isnull([DataCorePlugin.GameData.NewData.OpponentsCount],0),'0') + ';'
 + format(isnull([DataCorePlugin.GameData.NewData.CurrentLap],0),'0') + ';'
 + format(isnull([DataCorePlugin.GameData.NewData.TotalLaps],0),'0') + ';'
-+ format([DataCorePlugin.GameData.NewData.LastLapTime],'mm\:ss\.fff') + ';'
-+ format([DataCorePlugin.GameData.NewData.BestLapTime],'mm\:ss\.fff') + ';'
-+ format([DataCorePlugin.GameData.NewData.CurrentLapTime],'mm\:ss\.fff') + ';'
++ format([DataCorePlugin.GameData.NewData.LastLapTime],'mm\\:ss\\.fff') + ';'
++ format([DataCorePlugin.GameData.NewData.BestLapTime],'mm\\:ss\\.fff') + ';'
++ format([DataCorePlugin.GameData.NewData.CurrentLapTime],'mm\\:ss\\.fff') + ';'
 + format(isnull([PersistantTrackerPlugin.SessionBestLiveDeltaSeconds],0)*1000,'0') + ';'
 + format(isnull([DataCorePlugin.GameData.NewData.Fuel],0)*10,'0') + ';'
 + format(isnull([DataCorePlugin.Computed.Fuel_LitersPerLap],0)*100,'0') + ';'
@@ -63,6 +63,12 @@ UPDATE MESSAGE (copy everything between the lines):
 ------------------------------------------------------------------------
 
 NOTES
+- Lap-time format strings use DOUBLE backslashes: 'mm\\:ss\\.fff'. SimHub's
+  NCalc treats \: as an invalid escape inside a quoted string (error:
+  "no viable alternative at character ':'"). Writing \\ emits a literal
+  backslash, so .NET receives mm\:ss\.fff and formats "01:23.456". (The
+  single-backslash form you see online is for unquoted dashboard format
+  fields, where NCalc string-escaping doesn't apply — a different context.)
 - No "On connect" / "On disconnect" message is required.
 - Leave "Message ending" / newline options OFF — the '#' is the terminator.
 - If your Windows locale prints a leading space for positive numbers,

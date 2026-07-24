@@ -110,6 +110,7 @@ Both are saved to NVS and restored on next boot.
 | "WAITING FOR SIMHUB…" never clears | Wrong COM port or baud; Arduino Serial Monitor still open; or the Update Message wasn't added. Confirm 115200 and the `#`-terminated line in SimHub's "log" view. |
 | Garbled / partial values | Baud mismatch, or a newline option is on in SimHub. Keep 115200 and `#` terminator only. |
 | Numbers with commas break fields | The protocol already sends scaled **integers** to avoid locale decimal commas — make sure you used the provided expression unmodified. |
+| SimHub: `Expression error: no viable alternative at character ':'` | The lap-time format string needs **double** backslashes in a quoted NCalc string: `'mm\\:ss\\.fff'` (not `'mm\:ss\.fff'`). The provided expression already uses the double form — re-copy it. |
 | Rev bar never fills | That game doesn't provide `CarSettings_CurrentDisplayedRPMPercent`; the firmware auto-falls back to Rpms/MaxRpm — verify `MaxRpm` is non-zero for the car. |
 | Touch axes swapped/off | Touch auto-calibrates its range as you tap; the three big zones are forgiving. For precise mapping see comments in `touchscreen.h`. |
 | Speed unit wrong | Tap the left third to toggle km/h ↔ mph. |
