@@ -15,7 +15,11 @@
 #ifndef LV_CONF_H
 #define LV_CONF_H
 
-#include <stdint.h>
+/* NOTE: do NOT #include <stdint.h> (or any C header) unguarded here.
+ * LVGL's assembly (.S) source files include this file during the assembler
+ * pass; a C header's typedefs would make the assembler fail with
+ * "unknown opcode or format name 'typedef'". If you ever must include a
+ * header, guard it:  #if defined(__ASSEMBLY__) ... #endif  */
 
 /*====================
    COLOR / MEMORY

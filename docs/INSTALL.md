@@ -105,6 +105,7 @@ Both are saved to NVS and restored on next boot.
 
 | Symptom | Fix |
 |---|---|
+| `Assembler messages: unknown opcode or format name 'typedef'` (on `stdint.h` / `_default_types.h`) | LVGL's `.S` assembly files include `lv_conf.h` during the **assembler** pass, so `lv_conf.h` must not `#include` any C header unguarded. This project's `lv_conf.h` is already assembler-safe (no unguarded `#include`). **Make sure the copy LVGL actually reads — the one next to the `lvgl` library folder (`Documents/Arduino/libraries/lv_conf.h`) — is this exact file.** Re-copy it after any update. |
 | Blank / white screen | Ensure `lv_bb_spi_lcd_create(DISPLAY_CYD_543)` used the **named constant** and `bb_spi_lcd` is new enough to define it. Confirm PSRAM enabled. |
 | "WAITING FOR SIMHUB…" never clears | Wrong COM port or baud; Arduino Serial Monitor still open; or the Update Message wasn't added. Confirm 115200 and the `#`-terminated line in SimHub's "log" view. |
 | Garbled / partial values | Baud mismatch, or a newline option is on in SimHub. Keep 115200 and `#` terminator only. |
